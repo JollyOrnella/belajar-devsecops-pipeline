@@ -21,4 +21,4 @@ USER appuser
 
 EXPOSE 5000
 
-CMD ["python", "app.py"]
+CMD ["sh", "-c", "python -c 'from app import init_db; init_db()' && waitress-serve --listen=0.0.0.0:5000 app:app"]

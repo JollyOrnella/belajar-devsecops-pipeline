@@ -1,0 +1,82 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Login DevSecOps</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #eef2f7;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+        }
+        .card {
+            background: white;
+            padding: 32px;
+            border-radius: 12px;
+            width: 320px;
+            box-shadow: 0 4px 18px #0002;
+        }
+        h2 {
+            text-align: center;
+            color: #19345c;
+        }
+        label {
+            display: block;
+            margin-top: 16px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 6px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 22px;
+            color: white;
+            background: #1565c0;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .success {
+            color: #176b35;
+            text-align: center;
+        }
+        .danger {
+            color: #b42318;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>Portal Login</h2>
+
+        {% if message %}
+        <p class="{{ status_class }}">{{ message }}</p>
+        {% endif %}
+
+        <form method="POST" action="/">
+            <label for="username">Nama Pengguna</label>
+            <input id="username" name="username"
+                   type="text" required>
+
+            <label for="password">Kata Sandi</label>
+            <input id="password" name="password"
+                   type="password" required>
+
+            <button type="submit">Masuk</button>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,41 +1,71 @@
 
-"""Aplikasi Flask untuk simulasi deteksi SQL Injection."""
+"""Aplikasi Flask untuk praktikum DevSecOps."""
 
+import os
 import sqlite3
 
-from flask import Flask, request
+from flask import Flask, render_template, request
+from werkzeug.security import check_password_hash, generate_password_hash
 
 app = Flask(__name__)
 
-
-def get_db_connection():
-    """Membuka koneksi database SQLite."""
-    return sqlite3.connect("users.db")
+DATABASE = os.path.join(os.path.dirname(__file__), "users.db")
 
 
-@app.route("/login", methods=["GET"])
-def login():
-    """Simulasi login yang sengaja mengandung SQL Injection."""
-    username = request.args.get("username")
-    password = request.args.get("password")
+def init_db():
+    """Membuat database dan akun demonstrasi praktikum."""
+    with sqlite3.connect(DATABASE) as conn:
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS users (
+                username TEXT PRIMARY KEY,
+                password_hash TEXT NOT NULL
+            )
+            """
+        )
 
-    conn = get_db_connection()
-    cursor = conn.cursor()
+        demo_password = os.environ.get("DEMO_PASSWORD")
+        if demo_password:
+            conn.execute(
+                """
+                INSERT OR IGNORE INTO users
+                (username, password_hash)
+                VALUES (?, ?)
+                """,
+                ("admin", generate_password_hash(demo_password)),
+            )
 
-    # Sengaja rentan untuk praktikum
-    query = (
-        "SELECT * FROM users WHERE username = '%s' "
-        "AND password = '%s'"
-    ) % (username, password)
 
-    cursor.execute(query)
-    user = cursor.fetchone()
-    conn.close()
+@app.route("/", methods=["GET", "POST"])
+def index():
+    """Menampilkan formulir login dan memproses autentikasi."""
+    message = None
+    status_class = None
 
-    if user:
-        return "Login berhasil"
-    return "Login gagal"
+    if request.method == "POST":
+        username = request.form.get("username", "")
+        password = request.form.get("password", "")
+
+        with sqlite3.connect(DATABASE) as conn:
+            user = conn.execute(
+                "SELECT password_hash FROM users WHERE username = ?",
+                (username,),
+            ).fetchone()
+
+        if user and check_password_hash(user[0], password):
+            message = "Login berhasil! Selamat datang."
+            status_class = "success"
+        else:
+            message = "Login gagal! Kredensial tidak valid."
+            status_class = "danger"
+
+    return render_template(
+        "index.html",
+        message=message,
+        status_class=status_class,
+    )
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    init_db()
+    app.run()
