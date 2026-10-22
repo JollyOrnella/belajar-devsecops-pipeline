@@ -21,6 +21,10 @@ jobs:
       - name: Run Semgrep SAST
         run: semgrep scan --config auto --error --exclude=".github" --exclude-rule="python.django.security.django-no-csrf-token.django-no-csrf-token"
 
+  pytest-check:
+    name: Pytest Quality Gate
+    uses: ./.github/workflows/unit-test.yml
+
   pylint-check:
     name: Pylint Code Quality Gate
     runs-on: ubuntu-latest
@@ -44,7 +48,7 @@ jobs:
 
   deploy-to-vm:
     name: Build & Deploy to Ubuntu VM
-    needs: [sast-scan, pylint-check]
+    needs: [sast-scan, pylint-check, pytest-check]
     if: github.event_name != 'pull_request'
     runs-on: self-hosted
     steps:
