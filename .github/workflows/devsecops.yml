@@ -19,7 +19,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run Semgrep SAST
-        run: semgrep scan --config auto --error --exclude=".github"
+        run: semgrep scan --config auto --error --exclude=".github" --exclude-rule="python.django.security.django-no-csrf-token.django-no-csrf-token"
 
   pylint-check:
     name: Pylint Code Quality Gate

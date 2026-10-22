@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal Login DevSecOps</title>
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -15,6 +16,7 @@
             align-items: center;
             margin: 0;
         }
+
         .card {
             background: white;
             padding: 32px;
@@ -22,14 +24,18 @@
             width: 320px;
             box-shadow: 0 4px 18px #0002;
         }
+
         h2 {
             text-align: center;
             color: #19345c;
         }
+
         label {
             display: block;
             margin-top: 16px;
+            color: #333;
         }
+
         input {
             width: 100%;
             padding: 10px;
@@ -38,6 +44,7 @@
             border: 1px solid #ccc;
             border-radius: 5px;
         }
+
         button {
             width: 100%;
             padding: 12px;
@@ -48,35 +55,79 @@
             border-radius: 5px;
             cursor: pointer;
         }
+
+        button:hover {
+            background: #0d47a1;
+        }
+
         .success {
             color: #176b35;
+            background: #e2f5e8;
+            padding: 10px;
+            border-radius: 5px;
             text-align: center;
         }
+
         .danger {
             color: #b42318;
+            background: #fde8e8;
+            padding: 10px;
+            border-radius: 5px;
             text-align: center;
         }
     </style>
 </head>
+
 <body>
+
     <div class="card">
+
         <h2>Portal Login</h2>
 
         {% if message %}
-        <p class="{{ status_class }}">{{ message }}</p>
+        <p class="{{ status_class }}">
+            {{ message }}
+        </p>
         {% endif %}
 
         <form method="POST" action="/">
-            <label for="username">Nama Pengguna</label>
-            <input id="username" name="username"
-                   type="text" required>
 
-            <label for="password">Kata Sandi</label>
-            <input id="password" name="password"
-                   type="password" required>
+            <!-- Token CSRF dari Flask-WTF -->
+            <input
+                type="hidden"
+                name="csrf_token"
+                value="{{ csrf_token() }}"
+            >
 
-            <button type="submit">Masuk</button>
+            <label for="username">
+                Nama Pengguna
+            </label>
+
+            <input
+                type="text"
+                id="username"
+                name="username"
+                required
+            >
+
+            <label for="password">
+                Kata Sandi
+            </label>
+
+            <input
+                type="password"
+                id="password"
+                name="password"
+                required
+            >
+
+            <button type="submit">
+                Masuk
+            </button>
+
         </form>
+
     </div>
+
 </body>
 </html>

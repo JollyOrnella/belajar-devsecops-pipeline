@@ -5,9 +5,14 @@ import os
 import sqlite3
 
 from flask import Flask, render_template, request
+from flask_wtf.csrf import CSRFProtect
 from werkzeug.security import check_password_hash, generate_password_hash
 
 app = Flask(__name__)
+
+app.config["SECRET_KEY"] = os.environ.get("FLASK_SECRET_KEY") or os.urandom(32)
+
+CSRFProtect(app)
 
 DATABASE = os.path.join(os.path.dirname(__file__), "users.db")
 
