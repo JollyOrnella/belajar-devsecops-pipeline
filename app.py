@@ -71,6 +71,16 @@ def index():
     )
 
 
+@app.route("/about")
+def about():
+    """Menampilkan informasi praktikum."""
+    return (
+        "<h1>Tentang Aplikasi DevSecOps</h1>"
+        "<p>Aplikasi ini menggunakan Flask, Docker, "
+        "GitHub Actions, Semgrep, Pylint, dan Pytest.</p>"
+    )
+
+
 if __name__ == "__main__":
     init_db()
     app.run()
