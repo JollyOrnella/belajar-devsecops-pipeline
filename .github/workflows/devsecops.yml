@@ -8,18 +8,27 @@ on:
     branches: ["main"]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   sast-scan:
     name: Semgrep SAST Scan
     runs-on: ubuntu-latest
     container:
       image: semgrep/semgrep
+
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
 
       - name: Run Semgrep SAST
-        run: semgrep scan --config auto --error --exclude=".github" --exclude-rule="python.django.security.django-no-csrf-token.django-no-csrf-token"
+        run: |
+          semgrep scan \
+            --config auto \
+            --error \
+            --exclude=".github" \
+            --exclude-rule="python.django.security.django-no-csrf-token.django-no-csrf-token"
 
   pytest-check:
     name: Pytest Quality Gate
@@ -28,6 +37,7 @@ jobs:
   pylint-check:
     name: Pylint Code Quality Gate
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
@@ -45,19 +55,3 @@ jobs:
 
       - name: Run Pylint Check
         run: pylint --fail-under=9.0 app.py
-
-  deploy-to-vm:
-    name: Build & Deploy to Ubuntu VM
-    needs: [sast-scan, pylint-check, pytest-check]
-    if: github.event_name != 'pull_request'
-    runs-on: self-hosted
-    steps:
-      - name: Checkout Source Code
-        uses: actions/checkout@v4
-
-      - name: Build and Run Container
-        run: |
-          docker build -t secure-flask-app:latest .
-          docker rm -f web-flask || true
-          docker run -d --restart unless-stopped -p 5000:5000 --name web-flask secure-flask-app:latest
-          docker ps --filter name=web-flask
