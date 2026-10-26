@@ -55,3 +55,32 @@ jobs:
 
       - name: Run Pylint Check
         run: pylint --fail-under=9.0 app.py
+
+        
+  trigger-private-deploy:
+    name: Trigger Private Deployment
+    needs: [sast-scan, pylint-check, pytest-check]
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Request deployment from private repository
+        env:
+          PRIVATE_DEPLOY_TOKEN: ${{ secrets.PRIVATE_DEPLOY_TOKEN }}
+          SOURCE_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+
+          curl --fail-with-body --silent --show-error \
+            --request POST \
+            --url "https://api.github.com/repos/JollyOrnella/devsecops-private-deploy/dispatches" \
+            --header "Accept: application/vnd.github+json" \
+            --header "Authorization: Bearer ${PRIVATE_DEPLOY_TOKEN}" \
+            --header "X-GitHub-Api-Version: 2022-11-28" \
+            --data "{\"event_type\":\"public-ci-passed\",\"client_payload\":{\"source_sha\":\"${SOURCE_SHA}\"}}"
+
+
+        
+
