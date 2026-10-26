@@ -1,7 +1,30 @@
+
+# Git dan GitHub
 .git
 .github
+
+# Virtual environment
 .venv
+venv
+
+# Python cache
 __pycache__
 .pytest_cache
 *.pyc
+
+# Environment dan kredensial
 .env
+.env.*
+*.pem
+*.key
+
+# Database lokal
+users.db
+*.db
+
+# File sistem dan editor
+.vscode
+.DS_Store
+
+# Log
+*.log
